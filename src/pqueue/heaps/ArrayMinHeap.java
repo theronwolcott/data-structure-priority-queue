@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.w3c.dom.Node;
+
 /**
  * <p>
  * {@link ArrayMinHeap} is a {@link MinHeap} implemented using an internal
@@ -245,7 +247,30 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return this.data.iterator();
+		Iterator<T> iterator = new Iterator<T>() {
+			ArrayMinHeap<T> copy = new ArrayMinHeap<>(ArrayMinHeap.this);
+	  
+			@Override
+			public boolean hasNext() {
+				// heap copy still has more in it
+				return !copy.isEmpty();
+			}
+	  
+			@Override
+			public T next() {
+				T target;
+				try {
+					// pop off the top of the heap copy
+					target = copy.deleteMin();
+				} catch (EmptyHeapException e) {
+					// this really shouldn't happen, but if it does...
+					target = null;
+				}
+				return target;
+			}
+		};
+	  
+		  return iterator;
 	}
 
 }

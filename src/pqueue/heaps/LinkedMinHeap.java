@@ -94,7 +94,9 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	 */
 	public LinkedMinHeap(MinHeap<T> other) {
 		this();
-		throw new UnimplementedMethodException();
+		for (var t : other) {
+			insert(t);
+		}
 	}
 
 
