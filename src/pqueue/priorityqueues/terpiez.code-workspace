@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../terpiez/terpiez"
+		},
+		{
+			"name": "pqueue",
+			"path": "../../.."
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}
