@@ -63,6 +63,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 
 
 	private int size;
+	private int modCount;
 
 
     /* *********************************************************************************************************
@@ -74,6 +75,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	 */
 	public LinkedMinHeap() {
 		this.size = 0;
+		this.modCount = 0;
 	}
 
 	/**
@@ -181,6 +183,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 
 	@Override
 	public void insert(T element) {
+		modCount++;
 		var node = new MinHeapNode(element);
 		if (size == 0) {
 			root = node;
@@ -247,6 +250,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	@Override
 	public T deleteMin() throws EmptyHeapException {    // DO *NOT* ERASE THE "THROWS" DECLARATION!
 		T data;
+		modCount++;
 		if (size == 0) {
 			throw new EmptyHeapException("Empty heap");
 		} else if (size == 1) {
@@ -272,7 +276,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
-			int origSize = size;
+			int origCount = modCount;
 			LinkedMinHeap<T> copy;
 			{
 				copy = new LinkedMinHeap<>();
@@ -298,7 +302,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 			@Override
 			public T next() {
 				T target;
-				if (size != origSize) {
+				if (modCount != origCount) {
 					throw new ConcurrentModificationException();
 				}
 				try {

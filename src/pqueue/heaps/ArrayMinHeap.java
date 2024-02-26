@@ -67,6 +67,7 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	 * Write any further private data elements or private methods for LinkedMinHeap
 	 * here...*
 	 *************************************************************************************/
+	private int modCount;
 
 	/*
 	 * *****************************************************************************
@@ -81,6 +82,7 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	 */
 	public ArrayMinHeap() {
 		this.data = new ArrayList<T>();
+		this.modCount = 0;
 	}
 
 	/**
@@ -163,6 +165,7 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 
 	@Override
 	public void insert(T element) {
+		modCount++;
 		this.data.add(element);
 		swapUp(data.size() - 1);
 	}
@@ -210,6 +213,7 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 		if (data.size() == 0) {
 			throw new EmptyHeapException("Heap is empty");
 		}
+		modCount++;
 		T target = this.data.get(0);
 		Collections.swap(this.data, 0, (this.data.size() - 1));
 		this.data.remove(this.data.size() - 1);
@@ -249,7 +253,7 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
-			int origSize = data.size();
+			int origCount = modCount;
 			ArrayMinHeap<T> copy;
 
 			{
@@ -268,7 +272,7 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 			@Override
 			public T next() {
 				T target;
-				if (data.size() != origSize) {
+				if (modCount != origCount) {
 					throw new ConcurrentModificationException();
 				}
 				try {
