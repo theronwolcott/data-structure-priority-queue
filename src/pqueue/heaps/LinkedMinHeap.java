@@ -255,7 +255,7 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 			throw new EmptyHeapException("Empty heap");
 		} else if (size == 1) {
 			data = root.data;
-			root.data = null;
+			root = null;
 			size--;
 		} else {
 			data = root.data;
@@ -287,7 +287,6 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 				if (n == null) {
 					return;
 				}
-				System.out.println("insert: " + n.data);
 				copy.insert(n.data);
 				helper(n.lChild);
 				helper(n.rChild);
@@ -295,8 +294,8 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 
 			@Override
 			public boolean hasNext() {
-				System.out.println("hasNext: " + !(copy.isEmpty()) + "; size: " + copy.size);
-				return !(copy.isEmpty());
+				boolean isEmpty = copy.isEmpty();
+				return !isEmpty;
 			}
 	  
 			@Override

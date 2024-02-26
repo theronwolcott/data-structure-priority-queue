@@ -160,7 +160,6 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 
 	public void swapTest(T element, T element2) {
 		Collections.swap(this.data, this.data.indexOf(element), this.data.indexOf(element2));
-		System.out.println(this.data.toString());
 	}
 
 	@Override
