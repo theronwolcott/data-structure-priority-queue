@@ -57,6 +57,7 @@ public class LinearPriorityQueue<T> implements PriorityQueue<T> {
 
 	private int size; // the size of the whole collection
 	private int queueCount; // the number of queues
+	private int modCount;
 	private LinkedList<QueueWrapper> list;
 
 	private class QueueWrapper {
@@ -85,6 +86,7 @@ public class LinearPriorityQueue<T> implements PriorityQueue<T> {
 	public LinearPriorityQueue() {
 		size = 0;
 		queueCount = 0;
+		modCount = 0;
 		list = new LinkedList<>();
 	}
 
@@ -114,6 +116,7 @@ public class LinearPriorityQueue<T> implements PriorityQueue<T> {
 			throw new InvalidPriorityException("Invalid priority");
 		}
 		QueueWrapper wrap;
+		modCount++;
 		if (queueCount == 0) {
 			// make first wrapper + queue
 			wrap = new QueueWrapper(priority);
@@ -155,6 +158,7 @@ public class LinearPriorityQueue<T> implements PriorityQueue<T> {
 		if (size == 0) {
 			throw new EmptyPriorityQueueException("Empty queue");
 		}
+		modCount++;
 		try {
 			var target = list.getFirst().queue.dequeue();
 			// check to see if this queue (for this priority) is empty
@@ -196,33 +200,41 @@ public class LinearPriorityQueue<T> implements PriorityQueue<T> {
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
+			int origCount = modCount;
 			Iterator<QueueWrapper> outer = list.iterator();
 			Iterator<T> inner = null;
 
 			@Override
 			public boolean hasNext() {
-				return (outer.hasNext() || inner.hasNext());
+				return (outer.hasNext() || (inner != null && inner.hasNext()));
 			}
 
 			@Override
 			public T next() {
+				if (modCount != origCount) {
+					throw new ConcurrentModificationException();
+				}
 				if (inner == null) {
 					// advance outer
 					inner = outer.next().queue.iterator();
-					// advance inner
-					return inner.next();
-				} else {
-					// advance inner
-					var target = inner.next();
-					if (!inner.hasNext()) {
-						// reset inner
-						inner = null;
-					}
-					return target;
 				}
+				// advance inner
+				var target = inner.next();
+				if (!inner.hasNext()) {
+					// reset inner
+					inner = null;
+				}
+				return target;
 			}
 		};
 		return iterator;
 	}
-
+	@Override
+	public String toString() {
+		String s = "";
+		for (T element : this) {
+			s += element.toString() + ",";
+		}
+		return s;
+	}
 }
