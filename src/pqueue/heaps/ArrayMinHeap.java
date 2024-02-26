@@ -9,6 +9,7 @@ import pqueue.exceptions.UnimplementedMethodException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import org.w3c.dom.Node;
@@ -248,7 +249,15 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
-			ArrayMinHeap<T> copy = new ArrayMinHeap<>(ArrayMinHeap.this);
+			int origSize = data.size();
+			ArrayMinHeap<T> copy;
+
+			{
+				copy = new ArrayMinHeap<>();
+				for (var t : data) {
+					copy.insert(t);
+				}
+			}
 	  
 			@Override
 			public boolean hasNext() {
@@ -259,6 +268,9 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 			@Override
 			public T next() {
 				T target;
+				if (data.size() != origSize) {
+					throw new ConcurrentModificationException();
+				}
 				try {
 					// pop off the top of the heap copy
 					target = copy.deleteMin();
@@ -273,4 +285,12 @@ public class ArrayMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 		  return iterator;
 	}
 
+	@Override
+	public String toString() {
+		String s = "";
+		for (T element : this) {
+			s += element.toString() + ",";
+		}
+		return s;
+	}
 }

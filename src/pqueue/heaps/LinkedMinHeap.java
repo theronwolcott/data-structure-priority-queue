@@ -1,5 +1,7 @@
 package pqueue.heaps; // ******* <---  DO NOT ERASE THIS LINE!!!! *******
 
+import java.util.ConcurrentModificationException;
+
 /* *****************************************************************************************
  * THE FOLLOWING IMPORT IS NECESSARY FOR THE ITERATOR() METHOD'S SIGNATURE. FOR THIS
  * REASON, YOU SHOULD NOT ERASE IT! YOUR CODE WILL BE UNCOMPILABLE IF YOU DO!
@@ -99,7 +101,6 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 		}
 	}
 
-
     /**
      * Standard {@code equals} method. We provide this for you. DO NOT EDIT!
      * You should notice how the existence of an {@link Iterator} for {@link MinHeap}
@@ -183,6 +184,8 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 		var node = new MinHeapNode(element);
 		if (size == 0) {
 			root = node;
+			size++;
+			return;
 		} 
 		int pos = size + 1;
 		var parent = getNodeByPosition(getParentPosition(pos));
@@ -265,19 +268,47 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 		return data;
 	}
 
+
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
-			int pos = 0;
-	  
+			int origSize = size;
+			LinkedMinHeap<T> copy;
+			{
+				copy = new LinkedMinHeap<>();
+				helper(root);
+			}
+
+			private void helper(MinHeapNode n) {
+				if (n == null) {
+					return;
+				}
+				System.out.println("insert: " + n.data);
+				copy.insert(n.data);
+				helper(n.lChild);
+				helper(n.rChild);
+			}
+
 			@Override
 			public boolean hasNext() {
-			  return (pos < size);
+				System.out.println("hasNext: " + !(copy.isEmpty()) + "; size: " + copy.size);
+				return !(copy.isEmpty());
 			}
 	  
 			@Override
 			public T next() {
-			  return getNodeByPosition(++pos).data;
+				T target;
+				if (size != origSize) {
+					throw new ConcurrentModificationException();
+				}
+				try {
+					// pop off the top of the heap copy
+					target = copy.deleteMin();
+				} catch (EmptyHeapException e) {
+					// this really shouldn't happen, but if it does...
+					target = null;
+				}
+				return target;
 			}
 		  };
 	  
@@ -287,10 +318,10 @@ public class LinkedMinHeap<T extends Comparable<T>> implements MinHeap<T> {
 	@Override
 	public String toString() {
 		String s = "";
-for (T element : this) {
-	s += element.toString() + ",";
-}
-	return s;
+		for (T element : this) {
+			s += element.toString() + ",";
+		}
+		return s;
 	}
 
 }

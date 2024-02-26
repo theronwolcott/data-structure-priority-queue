@@ -75,7 +75,8 @@ public class StudentTests {
         testHeap.insert(1);
         testHeap.insert(2);
         testHeap.insert(3);
-        testHeap.print(testHeap);
+        System.out.println(testHeap);
+        //testHeap.print(testHeap);
         assertTrue(testHeap.size() == 4); // test size
 
         assertTrue(testHeap.getMin() == 0);
@@ -84,7 +85,8 @@ public class StudentTests {
         testHeap.insert(7);
         testHeap.insert(4);
         testHeap.insert(2);
-        testHeap.print(testHeap);
+        System.out.println(testHeap);
+        //testHeap.print(testHeap);
 
     }
     @Test
