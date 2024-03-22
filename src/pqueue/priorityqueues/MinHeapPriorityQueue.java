@@ -1,6 +1,5 @@
 package pqueue.priorityqueues; // ******* <---  DO NOT ERASE THIS LINE!!!! *******
 
-
 /* *****************************************************************************************
  * THE FOLLOWING IMPORTS WILL BE NEEDED BY YOUR CODE, BECAUSE WE REQUIRE THAT YOU USE
  * ANY ONE OF YOUR EXISTING MINHEAP IMPLEMENTATIONS TO IMPLEMENT THIS CLASS. TO ACCESS
@@ -15,15 +14,24 @@ import pqueue.heaps.ArrayMinHeap;
 import pqueue.heaps.EmptyHeapException;
 import pqueue.heaps.MinHeap;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+
 /**
- * <p>{@link MinHeapPriorityQueue} is a {@link PriorityQueue} implemented using a {@link MinHeap}.</p>
+ * <p>
+ * {@link MinHeapPriorityQueue} is a {@link PriorityQueue} implemented using a
+ * {@link MinHeap}.
+ * </p>
  *
- * <p>You  <b>must</b> implement the methods of this class! To receive <b>any credit</b> for the unit tests
- * related to this class, your implementation <b>must</b> use <b>whichever</b> {@link MinHeap} implementation
- * among the two that you should have implemented you choose!</p>
+ * <p>
+ * You <b>must</b> implement the methods of this class! To receive <b>any
+ * credit</b> for the unit tests
+ * related to this class, your implementation <b>must</b> use <b>whichever</b>
+ * {@link MinHeap} implementation
+ * among the two that you should have implemented you choose!
+ * </p>
  *
- * @author  ---- Theron Wolcott ----
+ * @author ---- Theron Wolcott ----
  *
  * @param <T> The Type held by the container.
  *
@@ -31,20 +39,23 @@ import java.util.Iterator;
  * @see MinHeap
  * @see PriorityQueue
  */
-public class MinHeapPriorityQueue<T> implements PriorityQueue<T>{
+public class MinHeapPriorityQueue<T> implements PriorityQueue<T> {
 
-	/* ***********************************************************************************
-	 * Write any private data elements or private methods for MinHeapPriorityQueue here...*
-	 * ***********************************************************************************/
+	/*
+	 * *****************************************************************************
+	 * ******
+	 * Write any private data elements or private methods for MinHeapPriorityQueue
+	 * here...*
+	 ***********************************************************************************/
 
 	private ArrayMinHeap<Node> heap;
 	int count = 0;
 
-	private class Node implements Comparable<Node>{
+	private class Node implements Comparable<Node> {
 		T data;
 		int priority;
-		int sequence; 
-		
+		int sequence;
+
 		Node(T data, int priority) {
 			this.data = data;
 			this.priority = priority;
@@ -67,19 +78,22 @@ public class MinHeapPriorityQueue<T> implements PriorityQueue<T>{
 		}
 	}
 
-	/* *********************************************************************************************************
-	 * Implement the following public methods. You should erase the throwings of UnimplementedMethodExceptions.*
+	/*
+	 * *****************************************************************************
+	 * ****************************
+	 * Implement the following public methods. You should erase the throwings of
+	 * UnimplementedMethodExceptions.*
 	 ***********************************************************************************************************/
-		/**
+	/**
 	 * Simple default constructor.
 	 */
-	public MinHeapPriorityQueue(){
+	public MinHeapPriorityQueue() {
 		heap = new ArrayMinHeap<>();
 	}
 
-
 	@Override
-	public void enqueue(T element, int priority) throws InvalidPriorityException {	// DO *NOT* ERASE THE "THROWS" DECLARATION!
+	public void enqueue(T element, int priority) throws InvalidPriorityException { // DO *NOT* ERASE THE "THROWS"
+																					// DECLARATION!
 		if (priority < 1) {
 			throw new InvalidPriorityException("Invalid priority");
 		}
@@ -87,7 +101,7 @@ public class MinHeapPriorityQueue<T> implements PriorityQueue<T>{
 	}
 
 	@Override
-	public T dequeue() throws EmptyPriorityQueueException {		// DO *NOT* ERASE THE "THROWS" DECLARATION!
+	public T dequeue() throws EmptyPriorityQueueException { // DO *NOT* ERASE THE "THROWS" DECLARATION!
 		if (heap.isEmpty()) {
 			throw new EmptyPriorityQueueException("Empty queue");
 		}
@@ -101,7 +115,7 @@ public class MinHeapPriorityQueue<T> implements PriorityQueue<T>{
 	}
 
 	@Override
-	public T getFirst() throws EmptyPriorityQueueException {	// DO *NOT* ERASE THE "THROWS" DECLARATION!
+	public T getFirst() throws EmptyPriorityQueueException { // DO *NOT* ERASE THE "THROWS" DECLARATION!
 		if (heap.isEmpty()) {
 			throw new EmptyPriorityQueueException("Empty queue");
 		}
@@ -124,22 +138,26 @@ public class MinHeapPriorityQueue<T> implements PriorityQueue<T>{
 		return heap.isEmpty();
 	}
 
-
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
-			// duplicate the heap so we can pop off the top, in order, without destroying our heap
+			// duplicate the heap so we can pop off the top, in order, without destroying
+			// our heap
 			ArrayMinHeap<Node> copy = new ArrayMinHeap<>(heap);
-	  
+			int originalSize = copy.size();
+
 			@Override
 			public boolean hasNext() {
 				// heap copy still has more in it
 				return !copy.isEmpty();
 			}
-	  
+
 			@Override
 			public T next() {
 				T target;
+				if (originalSize != heap.size()) {
+					throw new ConcurrentModificationException();
+				}
 				try {
 					// pop off the top of the heap copy
 					target = copy.deleteMin().data;
@@ -150,8 +168,8 @@ public class MinHeapPriorityQueue<T> implements PriorityQueue<T>{
 				return target;
 			}
 		};
-	  
-		  return iterator;
+
+		return iterator;
 	}
 
 }
