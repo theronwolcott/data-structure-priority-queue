@@ -171,5 +171,12 @@ public class MinHeapPriorityQueue<T> implements PriorityQueue<T> {
 
 		return iterator;
 	}
-
+	@Override
+	public String toString() {
+		String s = "";
+		for (T element : this) {
+			s += element.toString() + ",";
+		}
+		return s;
+	}
 }
